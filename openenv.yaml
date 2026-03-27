@@ -1,0 +1,8 @@
+version: "1.0.0"
+name: "email-triage-env"
+description: "A real-world simulation where an AI agent categorizes emails and assigns tasks."
+entry_point: "envs.simulator:EmailTriageEnv" # FolderName.FileName:ClassName
+tags:
+  - openenv
+  - productivity
+  - automation
