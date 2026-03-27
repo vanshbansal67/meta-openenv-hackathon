@@ -47,10 +47,9 @@ def run_baseline():
         from envs.models import EmailAction
         action = EmailAction(**action_data)
         
-        step_resp = env.step(action)
-        obs = step_resp.observation
-        reward = step_resp.reward
-        done = step_resp.done
+        obs = env.step(action)
+        reward = obs.reward
+        done = obs.done
         
         total_reward += reward
         print(f"Step Reward: {reward} | Total: {total_reward}")

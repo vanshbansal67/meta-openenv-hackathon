@@ -1,7 +1,7 @@
-from openenv import Environment, StepResponse
+from openenv.core import Environment
 from .models import EmailObservation, EmailAction
 
-class EmailTriageEnv(Environment[EmailObservation, EmailAction]):
+class EmailTriageEnv(Environment[EmailAction, EmailObservation, dict]):
     def __init__(self, task_id: str = "easy"):
         super().__init__()
         self.task_id = task_id
@@ -37,7 +37,7 @@ class EmailTriageEnv(Environment[EmailObservation, EmailAction]):
             current_queue_size=len(self.current_emails) - self.current_index
         )
 
-    def step(self, action: EmailAction) -> StepResponse[EmailObservation]:
+    def step(self, action: EmailAction, timeout_s: float | None = None, **kwargs) -> EmailObservation:
         correct_data = self.current_emails[self.current_index]
         reward = 0.0
         
@@ -57,10 +57,16 @@ class EmailTriageEnv(Environment[EmailObservation, EmailAction]):
         # Grader Score Calculation (Must be 0.0 to 1.0)
         final_score = self.total_points / len(self.current_emails) if done else 0.0
         
-        obs = self._get_obs() if not done else None
-        
-        # Info mein final_grader_score pass karna zaroori hai
-        return StepResponse(observation=obs, reward=reward, done=done, info={"grader_score": final_score})
+        if not done:
+            obs = self._get_obs()
+        else:
+            obs = EmailObservation(sender="", subject="", body="", current_queue_size=0)
+            
+        obs.reward = reward
+        obs.done = done
+        obs.metadata = {"grader_score": final_score}
+        return obs
 
+    @property
     def state(self) -> dict:
         return {"task": self.task_id, "index": self.current_index}
