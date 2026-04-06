@@ -6,6 +6,16 @@ Ye ek real-world simulation environment hai jahan ek AI Agent ko "Digital Assist
 **Motivation:** Aaj kal LLM agents text toh samajh lete hain, par unhe structured environment chahiye jahan wo "Partial Success" aur "Deterministic Graders" ke saath train ho sakein. Ye environment wahi gap fill karta hai.
 
 ---
+## 🚀 Baseline Inference
+
+The final, fully compliant baseline inference script is located at the root of the project:
+`inference.py`
+
+*(Note: Any older testing scripts like `baseline.py` have been deprecated and moved to the archive/ folder. Please use `inference.py` for all official evaluations).*
+
+**To run the inference script:**
+```bash
+python inference.py
 
 ### **Environment Design**
 
