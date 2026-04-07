@@ -28,6 +28,7 @@ The project follows the standard **Meta OpenEnv** specification for seamless int
 ├── requirements.txt    # Dependency list
 └── README.md           # Documentation
 
+```
 ---
 
 ### **3. ⚙️ Environment Design**
