@@ -1,62 +1,81 @@
-# 📧 Email Triage & Automation Agent Environment
+# 📧 Meta OpenEnv: Email Triage & Automation Agent Environment
 
-### **Overview**
-Ye ek real-world simulation environment hai jahan ek AI Agent ko "Digital Assistant" ki tarah kaam karna hota hai. Agent ka kaam hai incoming emails ko read karna, unki **Priority** decide karna, aur unhe sahi **Category** mein daalna. 
-
-**Motivation:** Aaj kal LLM agents text toh samajh lete hain, par unhe structured environment chahiye jahan wo "Partial Success" aur "Deterministic Graders" ke saath train ho sakein. Ye environment wahi gap fill karta hai.
-
----
-## 🚀 Baseline Inference
-
-The final, fully compliant baseline inference script is located at the root of the project:
-`inference.py`
-
-*(Note: Any older testing scripts like `baseline.py` have been deprecated and moved to the archive/ folder. Please use `inference.py` for all official evaluations).*
-
-**To run the inference script:**
-```bash
-python inference.py
-
-### **Environment Design**
-
-#### **1. Observation Space**
-Agent ko har step par ek `EmailObservation` milti hai:
-* `sender`: Email bhejne wale ki identity.
-* `subject`: Context aur urgency samajhne ke liye.
-* `body`: Detail analysis ke liye poora content.
-* `current_queue_size`: Pending tasks ki count.
-
-#### **2. Action Space**
-Agent ko `EmailAction` perform karni hoti hai:
-* `priority`: High, Medium, ya Low (Crucial for sorting).
-* `category`: Support, Billing, ya Spam (Crucial for routing).
-* `action_taken`: Agent ki reasoning ka log.
+[![OpenEnv](https://img.shields.io/badge/OpenEnv-Spec_Compliant-green)](https://github.com/meta-llama/openenv)
+[![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Space-blue)](https://huggingface.co/spaces/Vanshbansal67/meta-pytorch-openenv-triage)
 
 ---
 
-### **Task Progression & Difficulty**
-Humne isme 3 distinct tasks implement kiye hain jo agent ki reasoning power ko test karte hain:
+### **1. 📝 Overview**
+This project introduces a high-fidelity simulation environment for **AI Digital Assistants** focused on automated email management. The agent acts as an automated triage officer, responsible for analyzing incoming corporate communications, determining their business priority, and routing them to the correct internal departments.
 
-| Task ID | Level | Description |
-| :--- | :--- | :--- |
-| `easy` | Beginner | Simple spam filter aur obvious boss emails. |
-| `medium` | Intermediate | Billing failures aur policy updates jisme nuance chahiye. |
-| `hard` | Advanced | Production-level bug reports jahan priority determine karna mushkil hota hai. |
+**The Problem:** Most LLM agents excel at chat but struggle with structured decision-making in noisy environments. This environment provides a deterministic sandbox with granular reward signals to benchmark an agent's reasoning against real-world corporate scenarios.
 
 ---
 
-### **Reward Shaping & Grader Logic**
-Is environment mein humne **Partial Reward signals** use kiye hain taaki agent jaldi seekh sake:
+### **2. 📂 Project Architecture**
+The project follows the standard **Meta OpenEnv** specification for seamless integration with automated evaluation pipelines.
+
+```text
+.
+├── envs/
+│   ├── __init__.py
+│   ├── models.py       # Pydantic models (Action/Observation)
+│   └── simulator.py    # Core logic & Grader system
+├── archive/            # Deprecated testing scripts
+├── Dockerfile          # Containerization for HF Spaces
+├── inference.py        # MANDATORY: Official baseline script
+├── openenv.yaml        # Environment metadata
+├── requirements.txt    # Dependency list
+└── README.md           # Documentation
+
+---
+
+### **3. ⚙️ Environment Design**
+
+The agent interacts with the email system through a well-defined interface, ensuring deterministic results and measurable outcomes.
+
+#### **Observation Space (`EmailObservation`)**
+The agent receives a structured snapshot of the incoming task:
+* **`sender`**: String identifying the source (e.g., `ceo@company.com`, `no-reply@billing.com`).
+* **`subject`**: Email subject line providing immediate context.
+* **`body`**: Full semantic content for deep triage analysis.
+* **`current_queue_size`**: Integer reflecting the workload remaining in the assistant's buffer.
+
+#### **Action Space (`EmailAction`)**
+The agent must generate a precise JSON-serializable action:
+* **`priority`**: Must be categorized as `High`, `Medium`, or `Low`.
+* **`category`**: Must be routed to `Support`, `Billing`, or `Spam`.
+* **`action_taken`**: A log of the agent's internal reasoning or the specific handling step executed.
+
+---
+
+### **4. 📊 Task Progression & Graders**
+
+We have implemented three programmatic task levels to evaluate the agent across a gradient of semantic complexity:
+
+| Task ID | Level | Scenario Description | Evaluation Goal |
+| :--- | :--- | :--- | :--- |
+| **`easy`** | Beginner | Clear-cut marketing spam vs. direct personal boss emails. | High precision in Spam/Priority detection. |
+| **`medium`** | Intermediate | Overdue billing notices mixed with general policy updates. | Recognition of financial/administrative urgency. |
+| **`hard`** | Advanced | Critical production bug reports vs. complex feature requests. | Nuanced differentiation of technical priority. |
+
+---
+
+### **5. 🏆 Reward Shaping & Evaluation Logic**
+
+To facilitate Reinforcement Learning and fine-grained benchmarking, we use a weighted reward function that rewards partial accuracy:
 
 $$Reward = (0.3 \times \text{Category Match}) + (0.7 \times \text{Priority Match})$$
 
-* **Grader Score:** Har episode ke end mein ek `grader_score` (0.0 to 1.0) generate hota hai jo total accumulated rewards ka average hota hai.
+* **Grader Score:** The final `grader_score` (0.0 to 1.0) is the normalized average of the rewards accumulated over the task trajectory.
+* **Success Threshold:** A task is considered successful if the cumulative score exceeds **0.70**.
 
 ---
 
-### **Setup & Usage Instructions**
+### **6. 🛠️ Setup & Reproducibility**
 
-**1. Installation**
+#### **Local Installation**
+We recommend using `uv` for high-speed dependency management:
 ```bash
 pip install uv
 uv lock
