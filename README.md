@@ -81,3 +81,11 @@ We recommend using `uv` for high-speed dependency management:
 pip install uv
 uv lock
 pip install -r requirements.txt
+
+```
+### **8. 👥 Project Contributors & Metadata**
+* **`Lead Developer`**: Vanshaj Bansal, Mahima
+* **`Institution`**: Vidya College of Engineering, Meerut (UP)
+* **`Project Status`**: Production Ready / Meta Spec Compliant
+* **`Tech Stack`**: Python 3.11, FastAPI, Pydantic, Docker, OpenAI SDK
+* **`OpenEnv Identifier`**: openenv-email-triage-v1
